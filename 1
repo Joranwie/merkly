@@ -1,0 +1,27 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ProofOfWork {
+    uint256 public difficulty = 3; // Number of leading zeroes required in the hash
+    uint256 public nonce;
+    bytes32 public target;
+
+    event NewNonce(uint256 nonce);
+
+    constructor() {
+        target = bytes32(2 ** (256 - difficulty) - 1); // Difficulty target
+    }
+
+    function mine(uint256 _nonce) external {
+        bytes32 hash = keccak256(abi.encodePacked(_nonce));
+        require(uint256(hash) <= uint256(target), "Proof of work not satisfied");
+
+        nonce = _nonce;
+        emit NewNonce(nonce);
+    }
+
+    function checkProof(uint256 _nonce) external view returns (bool) {
+        bytes32 hash = keccak256(abi.encodePacked(_nonce));
+        return uint256(hash) <= uint256(target);
+    }
+}
